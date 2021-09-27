@@ -224,7 +224,23 @@
 <p>If you are unfamiliar with neural networks you can take a look at <a class="reference external" href="https://teachablemachine.withgoogle.com/">teachable machine</a>.</p>
 <div class="section" id="how-to-work-with-this-book">
 <h2>How to work with this book<a class="headerlink" href="#how-to-work-with-this-book" title="Permalink to this headline">¶</a></h2>
-<p>To work with the notebooks you can use binder or work locally - a GPU is advised.</p>
+<p>To work with the notebooks you can use <a class="reference external" href="https://mybinder.org/">Binder</a>, <a class="reference external" href="https://colab.research.google.com">Google Colab</a> by clicking at the rocket at the of the page (not this one but on the following chapters it is shown).</p>
+<p>You can also work locally on this, assuming you have a Unix based system and have git, pip3 and Python installed</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># clone repo</span>
+git clone https://github.com/capital-G/adversarial-noise-workshop.git
+<span class="nb">cd</span> adversarial-noise-workshop
+
+<span class="c1"># create venv and activate it</span>
+virtualenv venv
+<span class="nb">source</span> venv/bin/activate
+
+<span class="c1"># install dependecies</span>
+pip3 install -r requirements.txt
+
+<span class="c1"># start jupyter lab</span>
+jupyter-lab
+</pre></div>
+</div>
 </div>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>

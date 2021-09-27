@@ -10,7 +10,25 @@ If you are unfamiliar with neural networks you can take a look at [teachable mac
 
 ## How to work with this book
 
-To work with the notebooks you can use binder or work locally - a GPU is advised.
+To work with the notebooks you can use [Binder](https://mybinder.org/), [Google Colab](https://colab.research.google.com) by clicking at the rocket at the of the page (not this one but on the following chapters it is shown).
+
+You can also work locally on this, assuming you have a Unix based system and have git, pip3 and Python installed
+
+```shell
+# clone repo
+git clone https://github.com/capital-G/adversarial-noise-workshop.git
+cd adversarial-noise-workshop
+
+# create venv and activate it
+virtualenv venv
+source venv/bin/activate
+
+# install dependecies
+pip3 install -r requirements.txt
+
+# start jupyter lab
+jupyter-lab
+```
 
 ## License
 
