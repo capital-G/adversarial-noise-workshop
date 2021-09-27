@@ -1,0 +1,1081 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>One Pixel Attack &#8212; Adversarial Noise</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Adversarial Patch Detection" href="03-adversarial-patch.html" />
+    <link rel="prev" title="FGSM and BIM" href="01-FGSM.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="index.html">
+      
+        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+        
+      
+      
+      <img src="_static/noise.jpg" class="logo" alt="logo">
+      
+      
+      <h1 class="site-logo" id="site-title">Adversarial Noise</h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="README.html">
+   Adversarial Noise Workshop
+  </a>
+ </li>
+</ul>
+<ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="01-FGSM.html">
+   FGSM and BIM
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   One Pixel Attack
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="03-adversarial-patch.html">
+   Adversarial Patch Detection
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/02-one-pixel-attack.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/executablebooks/jupyter-book"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        <a class="issues-button"
+            href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2F02-one-pixel-attack.html&body=Your%20issue%20content%20here."><button
+                type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip" data-placement="left"
+                title="Open an issue"><i class="fas fa-lightbulb"></i>open issue</button></a>
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/docs/02-one-pixel-attack.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav" aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cifar-10">
+   CIFAR-10
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#imagenet">
+   ImageNet
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   References
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bibliography">
+     Bibliography
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="one-pixel-attack">
+<span id="one-pixel"></span><h1>One Pixel Attack<a class="headerlink" href="#one-pixel-attack" title="Permalink to this headline">¶</a></h1>
+<p>In this notebook we will be using the Adversarial Attack <em>One Pixel Attack</em> introduced in the publication <span id="id1">[<a class="reference internal" href="#id4">SVS19</a>]</span>.
+As in <a class="reference internal" href="01-FGSM.html#fgsm"><span class="std std-ref">FGSM and BIM</span></a> we will use PyTorch.</p>
+<p>We will first perform the attack on the CIFAR neural net architecture which works on low resolution and later perform it on the imagenet architecture which supports higher resolution images.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">import</span> <span class="nn">torchvision</span>
+<span class="kn">from</span> <span class="nn">torchvision.transforms</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">differential_evolution</span>
+
+<span class="c1"># we import and disable warning messages</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+
+<span class="n">data_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;data/&#39;</span><span class="p">)</span>
+<span class="c1"># setting a random seed makes the random number generator deterministic and reproducible</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">backends</span><span class="o">.</span><span class="n">cudnn</span><span class="o">.</span><span class="n">deterministic</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="cifar-10">
+<h2>CIFAR-10<a class="headerlink" href="#cifar-10" title="Permalink to this headline">¶</a></h2>
+<p>In this notebook we will use images from the CIFAR-10 dataset. This dataset consists of 60000 low resolution color images of 32x32 pixels, distributed in 10 different classes, see <a class="reference external" href="https://www.cs.toronto.edu/~kriz/cifar.html">here</a> for more information about this dataset.</p>
+<p>We will download the dataset from torchvision.datasets, and we will also introduce the needed image transformations.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CIFAR10_MEAN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.4914</span><span class="p">,</span> <span class="mf">0.4822</span><span class="p">,</span> <span class="mf">0.4465</span><span class="p">])</span>
+<span class="n">CIFAR10_STD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2023</span><span class="p">,</span> <span class="mf">0.1994</span><span class="p">,</span> <span class="mf">0.2010</span><span class="p">])</span>
+
+<span class="n">cifar10_transform</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">([</span>
+    <span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">Normalize</span><span class="p">(</span><span class="n">CIFAR10_MEAN</span><span class="p">,</span> <span class="n">CIFAR10_STD</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="c1"># we store the images of the dataset downloaded in the variable testset</span>
+<span class="n">testset</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR10</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;./data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">cifar10_transform</span><span class="p">)</span>
+
+<span class="c1"># we define the size of the groups of images</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="c1"># we use a DataLoader to access to the images</span>
+<span class="n">testloader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">testset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">CATEGORY_NAMES</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;plane&#39;</span><span class="p">,</span> <span class="s1">&#39;car&#39;</span><span class="p">,</span> <span class="s1">&#39;bird&#39;</span><span class="p">,</span> <span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="s1">&#39;deer&#39;</span><span class="p">,</span> <span class="s1">&#39;dog&#39;</span><span class="p">,</span> <span class="s1">&#39;frog&#39;</span><span class="p">,</span> <span class="s1">&#39;horse&#39;</span><span class="p">,</span> <span class="s1">&#39;ship&#39;</span><span class="p">,</span> <span class="s1">&#39;truck&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;data loaded&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Files already downloaded and verified
+data loaded
+</pre></div>
+</div>
+</div>
+</div>
+<p>As models pre-trained on this dataset are not available in torchvision, we will load a model that previously trained on this dataset with the VGG16 network architecture adapted to CIFAR-10 that is the data folder.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">VGG16</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VGG16</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_layers</span><span class="p">([</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="s1">&#39;M&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classifier</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="k">def</span> <span class="nf">_make_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cfg</span><span class="p">):</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">in_channels</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s1">&#39;M&#39;</span><span class="p">:</span>
+                <span class="n">layers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">layers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+                           <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                           <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
+                <span class="n">in_channels</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">layers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="o">*</span><span class="n">layers</span><span class="p">)</span>
+
+<span class="c1"># init the network</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">VGG16</span><span class="p">()</span>
+
+<span class="c1"># As in the previous notebook, we will use cuda support to accelerate the computation if it&#39;s available:</span>
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cuda&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;found cuda!&#39;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s1">&#39;cpu&#39;</span><span class="p">)</span>
+
+<span class="n">net</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="c1"># now load the weigths for the model</span>
+<span class="n">pretrained_model</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s1">&#39;cifvgg16.pth&#39;</span><span class="p">),</span> <span class="n">map_location</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">pretrained_model</span><span class="p">)</span>  
+<span class="k">except</span><span class="p">:</span>
+    <span class="c1"># if the pretrained model was trained and saved with DataParallel, we need</span>
+    <span class="c1"># to add some extra code</span>
+    <span class="n">net</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">DataParallel</span><span class="p">(</span><span class="n">net</span><span class="p">)</span>
+    <span class="n">net</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">pretrained_model</span><span class="p">[</span><span class="s1">&#39;net&#39;</span><span class="p">])</span>  
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;model was trained with nn.DataParallel&#39;</span><span class="p">)</span>
+
+<span class="c1"># when we load a model with pytorch, by default it is in train mode</span>
+<span class="c1"># as we are going to use the model to make predictions we set it with evaluation mode</span>
+<span class="c1"># with the ; we hide the output that was going to be printed out </span>
+<span class="n">net</span><span class="o">.</span><span class="n">eval</span><span class="p">();</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded model&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>model was trained with nn.DataParallel
+Loaded model
+</pre></div>
+</div>
+</div>
+</div>
+<p>We are going to visualize some images from our tesloader</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">plot_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span> <span class="n">dataset_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">CIFAR10_MEAN</span><span class="p">,</span> <span class="n">dataset_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">CIFAR10_STD</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">img_tensor</span> <span class="o">=</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">img_np</span> <span class="o">=</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    
+    <span class="c1"># _STD[None, None] adds 2 dimensions so we are multiplying the color dimension of the picture</span>
+    <span class="n">img_np</span> <span class="o">=</span> <span class="p">(</span><span class="n">img_np</span> <span class="o">*</span> <span class="n">dataset_std</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">])</span> <span class="o">+</span> <span class="n">dataset_mean</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">img_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">img_np</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    
+    <span class="c1"># we plot the image </span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_np</span><span class="p">)</span>
+
+<span class="c1"># we define an iterator for the testloader</span>
+<span class="n">testloader_iterator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">testloader</span><span class="p">)</span>
+
+<span class="c1"># we select the first image from the next batch</span>
+<span class="n">img_tensors</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">testloader_iterator</span><span class="p">)</span>
+<span class="n">img_tensor</span> <span class="o">=</span> <span class="n">img_tensors</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">label_tensor</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Label </span><span class="si">{</span><span class="n">label_tensor</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">CATEGORY_NAMES</span><span class="p">[</span><span class="n">label_tensor</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">plot_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Label 4: deer
+</pre></div>
+</div>
+<img alt="_images/02-one-pixel-attack_7_1.png" src="_images/02-one-pixel-attack_7_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict_image</span><span class="p">(</span>
+    <span class="n">img_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span><span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">,</span>
+    <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">CATEGORY_NAMES</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="nb">float</span><span class="p">]:</span>  
+    <span class="c1"># create a mini-batch as expected by the model</span>
+    <span class="c1"># Add an extra batch dimension since pytorch treats all images as batches</span>
+    <span class="n">input_batch</span> <span class="o">=</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="c1"># we send it to the device</span>
+    <span class="n">input_batch</span> <span class="o">=</span> <span class="n">input_batch</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="c1"># forward pass, it returns unnormalized scores</span>
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_batch</span><span class="p">)</span>
+
+    <span class="c1"># we use the Softmax function to get the probability distribution over categories</span>
+    <span class="n">softmax</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">preds</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">pred_idx</span> <span class="o">=</span> <span class="n">preds</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+    <span class="c1"># the use our list of synsets to get the name of the category</span>
+    <span class="n">pred_category_name</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">pred_idx</span><span class="p">]</span>
+
+    <span class="c1"># the function max gives the confidence of predicted category, we round it to 2 digits</span>
+    <span class="n">pred_confidence</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">softmax</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+  
+    <span class="k">return</span> <span class="n">pred_idx</span><span class="p">,</span> <span class="n">pred_category_name</span><span class="p">,</span> <span class="n">pred_confidence</span>
+
+<span class="n">pred_idx</span><span class="p">,</span> <span class="n">pred_label</span><span class="p">,</span> <span class="n">pred_conf</span> <span class="o">=</span> <span class="n">predict_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prediction</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">pred_idx</span><span class="si">}</span><span class="se">\t</span><span class="s1"> category: </span><span class="si">{</span><span class="n">pred_label</span><span class="si">}</span><span class="se">\t</span><span class="s1"> confidence: </span><span class="si">{</span><span class="n">pred_conf</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ground truth</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">label_tensor</span><span class="si">}</span><span class="se">\t</span><span class="s1"> category: </span><span class="si">{</span><span class="n">CATEGORY_NAMES</span><span class="p">[</span><span class="n">label_tensor</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction	 id: 4	 category: deer	 confidence: 99.96%
+Ground truth	 id: 4	 category: deer
+</pre></div>
+</div>
+</div>
+</div>
+<p>The One Pixel Adversarial attack, acutually, allows us to define the number of pixels that will be modified. By increasing the number of pixels, we increase the number of chances to perform a successful attack. Although, with low resolution images from CIFAR-10, the chances are quite high with just 1 pixel.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># the number of pixels that will be altered</span>
+<span class="n">num_pixels_attacked</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">targeted</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># the maximum number of iteration in the DE algorithm</span>
+<span class="n">maxiter</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1">#The number of adverisal examples generated in each iteration</span>
+<span class="n">population_size</span> <span class="o">=</span> <span class="mi">400</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> 
+<span class="n">target_class</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Before we attack we need to define the functions which perform the attack.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">perturb_image</span><span class="p">(</span><span class="n">info_adv_pixels</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dataset_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="n">dataset_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    xs are the info of the pixels that need to be modified, one after another in a list</span>
+<span class="sd">    for example xs = [ 27.79521332  17.24732404  49.9820024  139.68544107 104.71582841 20.59664589  12.4189431  154.55886261 149.06277258 228.38783138]</span>
+<span class="sd">    in this example there are 10 values from the 2 pixels that are modified [x,y,r,g,b x,y,r,g,b]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">info_adv_pixels</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">info_adv_pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">info_adv_pixels</span><span class="p">])</span>    
+    
+    <span class="c1"># we convert the x,y,r,g,b values to ints</span>
+    <span class="n">info_adv_pixels</span> <span class="o">=</span> <span class="n">info_adv_pixels</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">info_adv_pixels</span><span class="p">:</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span><span class="p">)</span>
+        <span class="c1"># image tensors in a batch: [batch, channels, height, width] </span>
+        <span class="c1"># during training there is the batch size that leave to 0 [batch_size, channels, height, width]</span>
+        <span class="c1"># pixels are modified and normalized with cifar10 or ImageNet mean/std</span>
+        <span class="k">for</span> <span class="n">pixel</span> <span class="ow">in</span> <span class="n">pixels</span><span class="p">:</span>
+            <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pixel</span>
+            <span class="n">img_tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="n">dataset_mean</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">dataset_std</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">img_tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">g</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="n">dataset_mean</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">dataset_std</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">img_tensor</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="mf">255.0</span><span class="o">-</span><span class="n">dataset_mean</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="n">dataset_std</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        
+    <span class="c1"># we return the perturb image</span>
+    <span class="k">return</span> <span class="n">img_tensor</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">predict_classes</span><span class="p">(</span>
+    <span class="n">info_adv_pixels</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+    <span class="n">img_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">img_class</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">net</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">dataset_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+    <span class="n">dataset_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+    <span class="n">targetted_attack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    this is the function that is passed to DE to evaluate the performance of the generated modifications</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img_perturbed_tensor</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span>
+        <span class="n">info_adv_pixels</span><span class="p">,</span>
+        <span class="n">img_tensor</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span>
+        <span class="n">dataset_mean</span><span class="o">=</span><span class="n">dataset_mean</span><span class="p">,</span>
+        <span class="n">dataset_std</span><span class="o">=</span><span class="n">dataset_std</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">input_img</span> <span class="o">=</span> <span class="n">img_perturbed_tensor</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    
+    <span class="n">predictions</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">input_img</span><span class="p">))</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()[:,</span> <span class="n">img_class</span><span class="p">]</span>
+    
+    <span class="c1">#Trying to solve warning, but it didn&#39;t work</span>
+    <span class="c1">#predictions = F.softmax(net(input), dim=target_class).data.cpu().numpy()</span>
+
+    <span class="k">return</span> <span class="n">predictions</span> <span class="k">if</span> <span class="n">targetted_attack</span> <span class="k">else</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">predictions</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">attack_success</span><span class="p">(</span>
+    <span class="n">info_adv_pixels</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+    <span class="n">img_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">net</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">dataset_mean</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+    <span class="n">dataset_std</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span>
+    <span class="n">targeted_attack</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    returns True if it was a successful attack</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># we call perturb_image for modifying the pixels</span>
+    <span class="n">attack_image</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">info_adv_pixels</span><span class="p">,</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">clone</span><span class="p">(),</span> <span class="n">dataset_mean</span><span class="p">,</span> <span class="n">dataset_std</span><span class="p">)</span>
+
+    <span class="c1"># we send the result image to the GPU</span>
+    <span class="n">input_attack_image</span> <span class="o">=</span> <span class="n">attack_image</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>    
+    
+    <span class="c1"># we get the probabilities</span>
+    <span class="c1">#confidence = F.softmax(net(input)).data.cpu().numpy()[0]</span>
+    <span class="n">confidence</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">net</span><span class="p">(</span><span class="n">input_attack_image</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+    <span class="c1"># and the most predicted category</span>
+    <span class="n">predicted_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">confidence</span><span class="p">)</span>
+
+    <span class="c1"># if it predicts something else, it worked!!!</span>
+    <span class="c1"># in this case the predicted_class is the ground truth label</span>
+    <span class="k">if</span> <span class="n">predicted_class</span> <span class="o">!=</span> <span class="n">label</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">one_pixel_attack</span><span class="p">(</span>
+    <span class="n">img_tensor</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span>
+    <span class="n">label</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">net</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_pixels_attacked</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">population_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+    <span class="n">targeted_attack</span> <span class="o">=</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    
+    <span class="c1"># depending on the dataset that we use (and also on the neural net architecture), the input images we work with will have different dimensions</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;cifar10&quot;</span><span class="p">):</span> <span class="c1">#The bounds for the 32x32 pixels RGB images from CIFAR-10</span>
+        <span class="n">w_and_h</span> <span class="o">=</span> <span class="mi">32</span>
+        <span class="n">dataset_mean</span> <span class="o">=</span> <span class="n">CIFAR10_MEAN</span>
+        <span class="n">dataset_std</span> <span class="o">=</span> <span class="n">CIFAR10_STD</span>
+    <span class="k">elif</span><span class="p">(</span><span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;imagenet&quot;</span><span class="p">):</span>  <span class="c1">#The bounds for the 224x224 pixels RGB images for ImageNet</span>
+        <span class="n">w_and_h</span> <span class="o">=</span> <span class="mi">224</span>
+        <span class="n">dataset_mean</span> <span class="o">=</span> <span class="n">CIFAR10_MEAN</span>
+        <span class="n">dataset_std</span> <span class="o">=</span> <span class="n">CIFAR10_STD</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The dataset parameter has to be either cifar10 or imagenet&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># we create a list with the spatial and pixel boundaries</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="n">w_and_h</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">w_and_h</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">)]</span> <span class="o">*</span> <span class="n">num_pixels_attacked</span>
+    
+    <span class="n">popmul</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">population_size</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">))</span>
+
+    <span class="c1"># we need to pass two functions to the differential_evolution algorithm, that is the one that finds the pixel modifications</span>
+    <span class="c1"># for the attack</span>
+    
+    <span class="c1"># we pass our predict_classes function that predicts the category of the image tensor</span>
+    <span class="n">predict_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">xs</span><span class="p">:</span> <span class="n">predict_classes</span><span class="p">(</span>
+        <span class="n">xs</span><span class="p">,</span>
+        <span class="n">img_tensor</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">,</span>
+        <span class="n">net</span><span class="p">,</span>
+        <span class="n">dataset_mean</span><span class="p">,</span>
+        <span class="n">dataset_std</span><span class="p">,</span>
+        <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span>    
+    
+    <span class="c1"># we pass the function attack_success</span>
+    <span class="n">callback_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">convergence</span><span class="p">:</span> <span class="n">attack_success</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">img_tensor</span><span class="p">,</span>
+        <span class="n">label</span><span class="p">,</span>
+        <span class="n">net</span><span class="p">,</span>
+        <span class="n">dataset_mean</span><span class="p">,</span>
+        <span class="n">dataset_std</span><span class="p">,</span>
+        <span class="n">targeted_attack</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># we generate a matrix with zeros of the </span>
+    <span class="n">inits</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">popmul</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">)),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bounds</span><span class="p">)])</span>
+    
+    <span class="c1"># the initial population is initialized by using uniform distributions for generating the x,y coord:</span>
+    <span class="c1"># U(1,32) for CIFAR-10 and U(1,224) for ImageNet</span>
+    <span class="c1"># and gaussian distributions N(128,127) for RGB values</span>
+    <span class="k">for</span> <span class="n">init</span> <span class="ow">in</span> <span class="n">inits</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pixels_attacked</span><span class="p">):</span>
+            <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span><span class="o">*</span><span class="n">w_and_h</span> <span class="c1">#x</span>
+            <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">()</span><span class="o">*</span><span class="n">w_and_h</span> <span class="c1">#y</span>
+            <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>   <span class="c1">#r</span>
+            <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>   <span class="c1">#g</span>
+            <span class="n">init</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="mi">127</span><span class="p">)</span>   <span class="c1">#b</span>
+    
+    <span class="c1"># scipy&#39;s implementation of the differential evolution algorithm</span>
+    <span class="c1"># this algorithms is the core of this attack. It finds the pixels that lead to a missclassification of the image</span>
+    <span class="n">attack_result</span> <span class="o">=</span> <span class="n">differential_evolution</span><span class="p">(</span>
+        <span class="n">predict_fn</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">,</span>
+        <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">,</span>
+        <span class="n">popsize</span><span class="o">=</span><span class="n">popmul</span><span class="p">,</span>
+        <span class="n">recombination</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">atol</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">callback</span><span class="o">=</span><span class="n">callback_fn</span><span class="p">,</span>
+        <span class="n">polish</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="n">inits</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># perturb_image applies the pixels modifications stored in attack_result to the input image</span>
+    <span class="n">attack_image</span> <span class="o">=</span> <span class="n">perturb_image</span><span class="p">(</span><span class="n">attack_result</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">img_tensor</span><span class="p">,</span> <span class="n">dataset_mean</span><span class="p">,</span> <span class="n">dataset_std</span><span class="p">)</span>
+    
+    <span class="c1"># we return the result image and also the pixel modifications</span>
+    <span class="k">return</span> <span class="n">attack_image</span><span class="p">,</span> <span class="n">attack_result</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will now perform the attack.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># a candidate solution contains a fixed number of perturbations</span>
+<span class="c1"># one perturbation is a tuple containing the information for 1 pixel -&gt;  x,y,r,g,b</span>
+<span class="n">input_batch</span> <span class="o">=</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">adv_image</span><span class="p">,</span> <span class="n">perturbation</span> <span class="o">=</span> <span class="n">one_pixel_attack</span><span class="p">(</span><span class="n">img_tensor</span><span class="o">=</span><span class="n">input_batch</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label_tensor</span><span class="p">,</span><span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;cifar10&#39;</span><span class="p">,</span> <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_pixels_attacked</span><span class="o">=</span><span class="n">num_pixels_attacked</span><span class="p">,</span> <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">,</span> <span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+<span class="n">plot_image</span><span class="p">(</span><span class="n">adv_image</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
+
+<span class="n">pred_adv_idx</span><span class="p">,</span> <span class="n">pred_adv_label</span><span class="p">,</span> <span class="n">pred_adv_conf</span> <span class="o">=</span> <span class="n">predict_image</span><span class="p">(</span>
+    <span class="n">adv_image</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span>
+    <span class="n">net</span><span class="p">,</span>
+    <span class="n">device</span>
+<span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">perturbation</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prediction adversarial</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">pred_adv_idx</span><span class="si">}</span><span class="se">\t</span><span class="s1">category: </span><span class="si">{</span><span class="n">pred_adv_label</span><span class="si">}</span><span class="se">\t</span><span class="s1"> confidence: </span><span class="si">{</span><span class="n">pred_adv_conf</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ground truth</span><span class="se">\t\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">label_tensor</span><span class="si">}</span><span class="se">\t</span><span class="s1">category: </span><span class="si">{</span><span class="n">CATEGORY_NAMES</span><span class="p">[</span><span class="n">label_tensor</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(x,y) = (</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) and (R,G,B) = (</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction adversarial	 id: 4	category: deer	 confidence: 95.03%
+Ground truth		 id: 4	category: deer
+(x,y) = (28,22) and (R,G,B) = (216,0,0)
+</pre></div>
+</div>
+<img alt="_images/02-one-pixel-attack_17_1.png" src="_images/02-one-pixel-attack_17_1.png" />
+</div>
+</div>
+<p>We will now randomly select any other image from the dataset</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get a random sample</span>
+<span class="n">random_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">batch_size</span><span class="p">)</span>
+
+<span class="n">img_tensor</span> <span class="o">=</span> <span class="n">img_tensors</span><span class="p">[</span><span class="n">random_index</span><span class="p">]</span>
+<span class="n">label_tensor</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">random_index</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;original image (label </span><span class="si">{</span><span class="n">CATEGORY_NAMES</span><span class="p">[</span><span class="n">label_tensor</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plot_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>original image (label truck)
+</pre></div>
+</div>
+<img alt="_images/02-one-pixel-attack_19_1.png" src="_images/02-one-pixel-attack_19_1.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we call the predict image function that passes the image to the model to make a prediction</span>
+<span class="n">pred_idx</span><span class="p">,</span> <span class="n">pred_label</span><span class="p">,</span> <span class="n">pred_conf</span> <span class="o">=</span> <span class="n">predict_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prediction</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">pred_idx</span><span class="si">}</span><span class="se">\t</span><span class="s1"> category: </span><span class="si">{</span><span class="n">pred_label</span><span class="si">}</span><span class="se">\t</span><span class="s1"> confidence: </span><span class="si">{</span><span class="n">pred_conf</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ground truth</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">label_tensor</span><span class="si">}</span><span class="se">\t</span><span class="s1"> category: </span><span class="si">{</span><span class="n">CATEGORY_NAMES</span><span class="p">[</span><span class="n">label_tensor</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction	 id: 9	 category: truck	 confidence: 99.97%
+Ground truth	 id: 9	 category: truck
+</pre></div>
+</div>
+</div>
+</div>
+<p>And we perform the attack again</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_batch</span> <span class="o">=</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># we try adding more pixels, it will make it easier</span>
+<span class="n">num_pixels_attacked</span> <span class="o">=</span> <span class="mi">4</span>
+
+
+<span class="n">adv_image</span><span class="p">,</span> <span class="n">perturbation</span> <span class="o">=</span> <span class="n">one_pixel_attack</span><span class="p">(</span>
+    <span class="n">img_tensor</span><span class="o">=</span><span class="n">input_batch</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="n">label_tensor</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;cifar10&#39;</span><span class="p">,</span>
+    <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_pixels_attacked</span><span class="o">=</span><span class="n">num_pixels_attacked</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">,</span>
+    <span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+<span class="p">)</span>
+
+<span class="n">plot_image</span><span class="p">(</span><span class="n">adv_image</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
+
+<span class="n">pred_adv_idx</span><span class="p">,</span> <span class="n">pred_adv_label</span><span class="p">,</span> <span class="n">pred_adv_conf</span> <span class="o">=</span> <span class="n">predict_image</span><span class="p">(</span>
+    <span class="n">adv_image</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span>
+    <span class="n">net</span><span class="p">,</span>
+    <span class="n">device</span>
+<span class="p">)</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">perturbation</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prediction adversarial</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">pred_adv_idx</span><span class="si">}</span><span class="se">\t</span><span class="s1">category: </span><span class="si">{</span><span class="n">pred_adv_label</span><span class="si">}</span><span class="se">\t</span><span class="s1"> confidence: </span><span class="si">{</span><span class="n">pred_adv_conf</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ground truth</span><span class="se">\t\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">label_tensor</span><span class="si">}</span><span class="se">\t</span><span class="s1">category: </span><span class="si">{</span><span class="n">CATEGORY_NAMES</span><span class="p">[</span><span class="n">label_tensor</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(x,y) = (</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) and (R,G,B) = (</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction adversarial	 id: 0	category: plane	 confidence: 99.65%
+Ground truth		 id: 9	category: truck
+(x,y) = (5,15) and (R,G,B) = (109,193,221)
+</pre></div>
+</div>
+<img alt="_images/02-one-pixel-attack_22_1.png" src="_images/02-one-pixel-attack_22_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="imagenet">
+<h2>ImageNet<a class="headerlink" href="#imagenet" title="Permalink to this headline">¶</a></h2>
+<p>After we have seen how the attack works on low-res images we want to use the ImageNet dataset which has a higher resolution.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">images</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">)):</span>
+    <span class="c1"># remove file extension and path</span>
+    <span class="n">short_file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">images</span><span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">short_file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># Image is from PIL library</span>
+        <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loaded </span><span class="si">{</span><span class="n">file_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>loaded data/images/dataset/dog.jpg
+loaded data/images/dataset/harmonicawood.jpg
+loaded data/images/dataset/pineapple.jpg
+loaded data/images/dataset/joys.jpg
+loaded data/images/dataset/jellyfish.jpg
+loaded data/images/dataset/teapot.jpg
+loaded data/images/dataset/pizza.jpg
+loaded data/images/dataset/bus.jpg
+loaded data/images/dataset/pig.jpg
+loaded data/images/dataset/bear.jpg
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lets load AlexNet from torchvision. This neural net has been trained on ImageNet.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># define our network architecture</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">alexnet</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># we set our network to evaluation mode because we won&#39;t train ti</span>
+<span class="n">net</span><span class="o">.</span><span class="n">eval</span><span class="p">();</span> 
+
+<span class="c1"># we send the network to our GPU device for faster calcualtions</span>
+<span class="n">net</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;using AlexNet network architecture&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>using AlexNet network architecture
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># load labels</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_folder</span><span class="p">,</span> <span class="s1">&#39;synset_words.txt&#39;</span><span class="p">),</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">synset_words</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:])</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">synset_words</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([&#39;suspension bridge&#39;, &#39;jacamar&#39;, &#39;lotion&#39;, &#39;menu&#39;, &#39;scabbard&#39;],
+      dtype=&#39;&lt;U121&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<p>As with CIFAR10 we need to respect any pre-processing as well.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">IMAGENET_MEAN</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">])</span>
+<span class="n">IMAGENET_STD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span>
+
+<span class="n">preprocess_alexnet</span> <span class="o">=</span> <span class="n">Compose</span><span class="p">([</span>
+    <span class="n">Resize</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+    <span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+    <span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">Normalize</span><span class="p">(</span><span class="n">IMAGENET_MEAN</span><span class="p">,</span> <span class="n">IMAGENET_STD</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="n">plot_alexnet</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">img_tensor</span><span class="p">:</span> <span class="n">plot_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">,</span> <span class="n">IMAGENET_MEAN</span><span class="p">,</span> <span class="n">IMAGENET_STD</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># we pre-process the image and display it</span>
+<span class="n">img_tensor</span> <span class="o">=</span> <span class="n">preprocess_alexnet</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="s1">&#39;bear&#39;</span><span class="p">][</span><span class="s1">&#39;image&#39;</span><span class="p">])</span>
+<span class="n">plot_alexnet</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/02-one-pixel-attack_30_0.png" src="_images/02-one-pixel-attack_30_0.png" />
+</div>
+</div>
+<p>We use our network to predict the content of the image</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pred_idx</span><span class="p">,</span> <span class="n">pred_label</span><span class="p">,</span> <span class="n">pred_conf</span> <span class="o">=</span> <span class="n">predict_image</span><span class="p">(</span><span class="n">img_tensor</span><span class="p">,</span> <span class="n">net</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">synset_words</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prediction</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">pred_idx</span><span class="si">}</span><span class="se">\t</span><span class="s1"> category: </span><span class="si">{</span><span class="n">pred_label</span><span class="si">}</span><span class="se">\t</span><span class="s1"> confidence: </span><span class="si">{</span><span class="n">pred_conf</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction	 id: 294	 category: brown bear, bruin, Ursus arctos	 confidence: 100.0%
+</pre></div>
+</div>
+</div>
+</div>
+<p>With higher resolution images, we probability of having a successful attack is lower. Thus, we will increase the number of modified pixels</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># the number of pixels that will be altered</span>
+<span class="n">num_pixels_attacked</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">targeted</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># the maximum number of iteration in the DE algorithm</span>
+<span class="n">maxiter</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1">#The number of adverisal examples generated in each iteration</span>
+<span class="n">population_size</span> <span class="o">=</span> <span class="mi">400</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">targets</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> 
+<span class="n">target_class</span> <span class="o">=</span> <span class="kc">None</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We will now perform the attack, and predict again the content of the generated adversarial image</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># a candidate solution contains a fixed number of perturbations</span>
+<span class="c1"># one perturbation is a tuple containing the information for 1 pixel -&gt;  x,y,r,g,b</span>
+
+<span class="n">input_batch</span> <span class="o">=</span> <span class="n">img_tensor</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">pred_label_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">pred_idx</span><span class="p">)</span>
+
+<span class="n">adv_image</span><span class="p">,</span> <span class="n">perturbation</span> <span class="o">=</span> <span class="n">one_pixel_attack</span><span class="p">(</span>
+    <span class="n">img_tensor</span><span class="o">=</span><span class="n">input_batch</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="n">pred_label_tensor</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;imagenet&#39;</span><span class="p">,</span>
+    <span class="n">net</span><span class="o">=</span><span class="n">net</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">num_pixels_attacked</span><span class="o">=</span><span class="n">num_pixels_attacked</span><span class="p">,</span>
+    <span class="n">maxiter</span><span class="o">=</span><span class="n">maxiter</span><span class="p">,</span>
+    <span class="n">population_size</span><span class="o">=</span><span class="n">population_size</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+<span class="p">)</span>
+
+<span class="n">plot_alexnet</span><span class="p">(</span><span class="n">adv_image</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
+
+<span class="n">pred_adv_idx</span><span class="p">,</span> <span class="n">pred_adv_label</span><span class="p">,</span> <span class="n">pred_adv_conf</span> <span class="o">=</span> <span class="n">predict_image</span><span class="p">(</span>
+    <span class="n">adv_image</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(),</span>
+    <span class="n">net</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">,</span>
+    <span class="n">synset_words</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Prediction adversarial</span><span class="se">\t</span><span class="s1"> id: </span><span class="si">{</span><span class="n">pred_adv_idx</span><span class="si">}</span><span class="se">\t</span><span class="s1">category: </span><span class="si">{</span><span class="n">pred_adv_label</span><span class="si">}</span><span class="se">\t</span><span class="s1"> confidence: </span><span class="si">{</span><span class="n">pred_adv_conf</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Ground truth</span><span class="se">\t\t</span><span class="s1"> id: </span><span class="si">{</span><span class="kc">None</span><span class="si">}</span><span class="se">\t</span><span class="s1">category: </span><span class="si">{</span><span class="n">synset_words</span><span class="p">[</span><span class="n">pred_idx</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">perturbation</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pertubation </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: (x,y) = (</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">) and (R,G,B) = (</span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">p</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Prediction adversarial	 id: 294	category: brown bear, bruin, Ursus arctos	 confidence: 99.96%
+Ground truth		 id: None	category: brown bear, bruin, Ursus arctos
+Pertubation 0: (x,y) = (138, 65) and (R,G,B) = (173, 57, 247)
+Pertubation 1: (x,y) = (150, 76) and (R,G,B) = (211, 237, 237)
+Pertubation 2: (x,y) = (65, 77) and (R,G,B) = (133, 150, 156)
+Pertubation 3: (x,y) = (107, 109) and (R,G,B) = (85, 167, 82)
+Pertubation 4: (x,y) = (80, 36) and (R,G,B) = (44, 220, 98)
+Pertubation 5: (x,y) = (54, 87) and (R,G,B) = (169, 52, 228)
+Pertubation 6: (x,y) = (104, 63) and (R,G,B) = (161, 103, 182)
+Pertubation 7: (x,y) = (119, 105) and (R,G,B) = (22, 114, 99)
+Pertubation 8: (x,y) = (140, 74) and (R,G,B) = (233, 223, 150)
+Pertubation 9: (x,y) = (109, 206) and (R,G,B) = (59, 172, 64)
+</pre></div>
+</div>
+<img alt="_images/02-one-pixel-attack_36_1.png" src="_images/02-one-pixel-attack_36_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://arxiv.org/abs/1710.08864">One pixel attack for fooling deep neural networks</a></p></li>
+<li><p><a class="reference external" href="https://pablormier.github.io/2017/09/05/a-tutorial-on-differential-evolution-with-python/">A tutorial on Differential Evolution with Python</a></p></li>
+<li><p><a class="reference external" href="https://medium.com/profil-software-blog/few-practical-examples-of-cheating-ai-models-including-ga-genetic-algorithm-and-fgsm-fast-c522da8938af">3 practical examples for tricking Neural Networks using GA and FGSM. How can object classification be easily fooled?</a></p></li>
+<li><p><a class="reference external" href="https://github.com/cgnorthcutt/cleanlab/blob/master/examples/cifar10/cifar10_train_crossval.py">CIFAR-10 train</a></p></li>
+<li><p><a class="reference external" href="https://www.stefanfiott.com/machine-learning/cifar-10-classifier-using-cnn-in-pytorch/">CIFAR-10 Classifier Using CNN in PyTorch</a></p></li>
+</ul>
+<div class="section" id="bibliography">
+<h3>Bibliography<a class="headerlink" href="#bibliography" title="Permalink to this headline">¶</a></h3>
+<p id="id2"><dl class="citation">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">SVS19</a></span></dt>
+<dd><p>Jiawei Su, Danilo Vasconcellos Vargas, and Kouichi Sakurai. One pixel attack for fooling deep neural networks. <em>IEEE Transactions on Evolutionary Computation</em>, 23(5):828–841, Oct 2019. URL: <a class="reference external" href="http://dx.doi.org/10.1109/TEVC.2019.2890858">http://dx.doi.org/10.1109/TEVC.2019.2890858</a>, <a class="reference external" href="https://doi.org/10.1109/tevc.2019.2890858">doi:10.1109/tevc.2019.2890858</a>.</p>
+</dd>
+</dl>
+</p>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        
+            
+
+
+
+<div class='prev-next-bottom'>
+    
+    <div id="prev">
+        <a class="left-prev" href="01-FGSM.html" title="previous page">
+            <i class="prevnext-label fas fa-angle-left"></i>
+            <div class="prevnext-info">
+                <p class="prevnext-label">previous</p>
+                <p class="prevnext-title">FGSM and BIM</p>
+            </div>
+        </a>
+    </div>
+     <div id="next">
+        <a class="right-next" href="03-adversarial-patch.html" title="next page">
+            <div class="prevnext-info">
+                <p class="prevnext-label">next</p>
+                <p class="prevnext-title">Adversarial Patch Detection</p>
+            </div>
+            <i class="prevnext-label fas fa-angle-right"></i>
+        </a>
+     </div>
+
+</div>
+        
+        </div>
+    </div>
+    <footer class="footer">
+    <div class="container">
+      <p>
+        
+          By Javier Lloret Pardo<br/>
+        
+            &copy; Copyright 2021.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
